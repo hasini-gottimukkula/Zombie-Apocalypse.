@@ -1,43 +1,78 @@
-var wall, thickness;
-var bullet, speed, weight
+var helicopterIMG, helicopterSprite, packageSprite, packageIMG;
+var packageBody, ground, staticBody1, staticBody2, staticBody3;
+const Engine = Matter.Engine;
+const World = Matter.World;
+const Bodies = Matter.Bodies;
+const Body = Matter.Body;
 
+function preload() {
+	helicopterIMG = loadImage("helicopter.png")
+	packageIMG = loadImage("package.png")
+}
 
 function setup() {
-  createCanvas(1600, 400);
-  bullet = createSprite(50, 200, 40, 20);
-  bullet.shapeColor = "grey";
-  thickness = random(22, 83);
-  wall = createSprite(1200, 200, thickness, height / 2);
-  wall.shapeColor = "white";
+	createCanvas(800, 700);
+	rectMode(CENTER);
 
-  speed = random(223, 321);
-  weight = random(30, 52);
-  bullet.velocityX = speed;
+
+	packageSprite = createSprite(width / 2, 80, 10, 10);
+	packageSprite.addImage(packageIMG)
+	packageSprite.scale = 0.2
+
+	helicopterSprite = createSprite(width / 2, 200, 10, 10);
+	helicopterSprite.addImage(helicopterIMG)
+	helicopterSprite.scale = 0.6
+
+	groundSprite = createSprite(width / 2, height - 35, width, 10);
+	groundSprite.shapeColor = color(255)
+
+	engine = Engine.create();
+	world = engine.world;
+
+	packageBody = Bodies.circle(width / 2, 200, 5, { restitution: 0.5, isStatic: true });
+
+	World.add(world, packageBody);
+
+	staticBody1 = createSprite(width / 2, 655, 200, 10);
+	staticBody1.shapeColor = "red";
+
+	staticBody2 = createSprite(width / 2 - 100, 610, 10, 100);
+	staticBody2.shapeColor = "red";
+
+	staticBody3 = createSprite(width / 2 + 100, 610, 10, 100);
+	staticBody3.shapeColor = "red";
+
+
+	//Create a Ground
+	ground = Bodies.rectangle(width / 2, 650, width, 10, { isStatic: true });
+	World.add(world, ground);
+
+
+	Engine.run(engine);
 
 }
 
 
 function draw() {
-  background(0);
+	rectMode(CENTER);
+	background(0);
+	packageSprite.x = packageBody.position.x
+	packageSprite.y = packageBody.position.y
 
-  if (hasCollided(bullet, wall)) {
-    bullet.velocityX = 0;
-    var damage = 0.5 * weight * speed * speed / (thickness * thickness * thickness);
-    if (damage > 10) {
-      wall.shapeColor = "red";
-    }
-    if (damage < 10) {
-      wall.shapeColor = "green";
-    }
-  }
-  drawSprites();
+
+
+
+	drawSprites();
+
 }
 
-function hasCollided(bullet, wall) {
-  bulletRightEdge = bullet.x + bullet.width;
-  wallLeftEdge = wall.x;
-  if (bulletRightEdge >= wallLeftEdge) {
-    return true;
-  }
-  return false;
+function keyPressed() {
+	if (keyCode === DOWN_ARROW) {
+		Matter.Body.setStatic(packageBody, false);
+
+
+	}
 }
+
+
+
